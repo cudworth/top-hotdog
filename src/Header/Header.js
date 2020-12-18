@@ -1,7 +1,15 @@
 import './Header.css';
 
 function Header(props) {
-  return <div className="Header">Hello from the header!</div>;
+  const greenStyle = { backgroundColor: 'lime' };
+  const redStyle = { backgroundColor: 'orangered' };
+
+  return (
+    <div className="Header">
+      <div style={greenStyle}>Hotdog!</div>
+      <div style={redStyle}>Not hotdog!</div>
+    </div>
+  );
 }
 
 export default Header;

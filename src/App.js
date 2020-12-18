@@ -2,6 +2,7 @@ import './App.css';
 import Header from './Header/Header';
 //import Footer from './Footer/Footer';
 import Image from './Image/Image';
+import Popup from './Popup/Popup';
 import cloneDeep from 'lodash/cloneDeep';
 
 import localImage from './assets/food-2379472_1920.jpg';
@@ -23,6 +24,7 @@ function App() {
   const [state, setState] = useState({
     dogsFound: [].fill(false, 0, myImage.dogs.length),
     dogs: myImage.dogs,
+    popup: { visible: false, hotdog: false },
   });
 
   function isHotDog(coords, hotdogs) {
@@ -55,6 +57,18 @@ function App() {
           next.dogsFound[i] = true;
         }
       });
+
+      next.popup.visible = true;
+      next.popup.hotdog = hits.includes(true) ? true : false;
+
+      return next;
+    });
+  }
+
+  function onPopupClick(e) {
+    setState((prev) => {
+      const next = cloneDeep(prev);
+      next.popup.visible = false;
       return next;
     });
   }
@@ -69,6 +83,7 @@ function App() {
         dogs={state.dogs}
         dogsFound={state.dogsFound}
       ></Image>
+      <Popup popup={state.popup} onClick={onPopupClick}></Popup>
     </div>
   );
 }

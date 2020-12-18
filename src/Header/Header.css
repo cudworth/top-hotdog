@@ -1,0 +1,10 @@
+.Header {
+  display: flex;
+}
+
+.Header div {
+  flex-grow: 1;
+  font-family: sans-serif;
+  font-size: 24px;
+  color: yellow;
+}
