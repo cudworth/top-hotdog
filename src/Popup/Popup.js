@@ -1,19 +1,21 @@
 import './Popup.css';
+import hotdogImage from '../assets/hotdog.png';
+import notHotdogImage from '../assets/nothotdog.png';
 
 function Popup(props) {
-  const getClass = () => {
-    if (!props.popup.visible) {
-      return 'Popup-hidden';
-    } else if (props.popup.hotdog) {
-      return 'Popup-hotdog';
-    } else {
-      return 'Popup-not-hotdog';
-    }
-  };
-
   return (
-    <div className={getClass()} onClick={(e) => props.onClick(e)}>
-      {props.popup.hotdog ? 'Hotdog!' : 'Not hotdog!'}
+    <div
+      className={[
+        props.popup.visible ? 'Popup' : 'Popup-hidden',
+        props.popup.hotdog ? 'Popup-hotdog' : 'Popup-not-hotdog',
+      ].join(' ')}
+      onClick={(e) => props.onClick(e)}
+    >
+      <div>{props.popup.hotdog ? 'Hotdog!' : 'Not hotdog!'}</div>
+      <img
+        alt="Hotdog or not hotdog icon"
+        src={props.popup.hotdog ? hotdogImage : notHotdogImage}
+      ></img>
     </div>
   );
 }
