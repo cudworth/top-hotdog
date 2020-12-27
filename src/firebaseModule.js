@@ -1,11 +1,13 @@
 import firebase from 'firebase';
 
-const firebaseConfig = require('./firebaseCfg.env.json');
+const firebaseConfig = require('./firebaseKeys.json');
 
 // Initialize Firebase with a "default" Firebase project
 const myFirebase = firebase.initializeApp(firebaseConfig);
 
 const myFirestore = myFirebase.firestore();
+
+const myStorage = myFirebase.storage();
 
 function firebaseModule() {
   function signIn() {
@@ -88,6 +90,11 @@ function firebaseModule() {
       });
   }
 
+  function getDownloadURL(gs) {
+    const gsRef = myStorage.refFromURL(gs);
+    return gsRef.getDownloadURL();
+  }
+
   return {
     signIn,
     signOut,
@@ -98,6 +105,7 @@ function firebaseModule() {
     read,
     update,
     destroy,
+    getDownloadURL,
   };
 }
 

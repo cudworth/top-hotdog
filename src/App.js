@@ -3,13 +3,15 @@ import Header from './Header/Header';
 //import Footer from './Footer/Footer';
 import Image from './Image/Image';
 import Popup from './Popup/Popup';
-import cloneDeep from 'lodash/cloneDeep';
+import Menu from './Menu/Menu';
+import firebaseModule from './firebaseModule';
 
-import localImage from './assets/food-2379472_1920.jpg';
+//import localImage from './assets/food-2379472_1920.jpg';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 //Data format y-coord, x-coord, radius normalized for image height
+/*
 const myImage = {
   url: localImage,
   dogs: [
@@ -19,13 +21,40 @@ const myImage = {
     { y: 0.8924444444444445, x: 1.4151111111111112, r: 0.12 },
   ],
 };
+*/
+
+const myFirebase = firebaseModule();
 
 function App() {
   const [state, setState] = useState({
-    dogsFound: [].fill(false, 0, myImage.dogs.length),
-    dogs: myImage.dogs,
-    popup: { visible: false, hotdog: false },
+    popup: { isVisible: false, hotdog: false },
+    menu: { isVisible: true, images: {} },
+    image: {
+      isVisible: false,
+      url: null,
+      scale: null,
+      dogsFound: [],
+      data: {},
+    },
   });
+
+  useEffect(() => {
+    myFirebase.read('images').then((images) => {
+      const asyncTasks = Object.keys(images).map((key) => {
+        return myFirebase.getDownloadURL(images[key].gs).then((url) => {
+          images[key].url = url;
+        });
+      });
+
+      Promise.all(asyncTasks).then(() => {
+        setState((prev) => {
+          const next = { ...prev };
+          next.menu.images = images;
+          return next;
+        });
+      });
+    });
+  }, []);
 
   function isHotDog(coords, hotdogs) {
     const [y1, x1] = coords;
@@ -37,53 +66,63 @@ function App() {
     return arr;
   }
 
-  function onImageClick(e) {
+  function handleImageClick(e) {
     //get click coordinates relative to page
     const rect = e.target.getBoundingClientRect();
 
     //Calc click location within element, normalized for image height
-    //scale = rect.height;
     const normY = (e.pageY - rect.top - window.scrollY) / rect.height;
     const normX = (e.pageX - rect.left - window.scrollX) / rect.height;
     const coords = [normY, normX];
-    //console.log(coords);
+    console.log(coords);
 
     setState((prev) => {
-      const next = cloneDeep(prev);
-      next.scale = rect.height;
-      const hits = isHotDog(coords, myImage.dogs);
+      const next = { ...prev };
+      next.image.scale = rect.height;
+      const hits = isHotDog(coords, state.image.data.dogs);
       hits.forEach((hit, i) => {
-        if (hit && !next.dogsFound[i]) {
-          next.dogsFound[i] = true;
+        if (hit && !next.image.dogsFound[i]) {
+          next.image.dogsFound[i] = true;
         }
       });
 
-      next.popup.visible = true;
+      next.popup.isVisible = true;
       next.popup.hotdog = hits.includes(true) ? true : false;
 
       return next;
     });
   }
 
-  function onPopupClick(e) {
+  function handlePopupClick(e) {
     setState((prev) => {
-      const next = cloneDeep(prev);
-      next.popup.visible = false;
+      const next = { ...prev };
+      next.popup.isVisible = false;
       return next;
+    });
+  }
+
+  function handleMenuClick(args) {
+    const { e, key } = args;
+    e.preventDefault();
+
+    myFirebase.getDownloadURL(state.menu.images[key].gs).then((url) => {
+      setState((prev) => {
+        const next = { ...prev };
+        next.menu.isVisible = false;
+        next.image.isVisible = true;
+        next.image.data = next.menu.images[key];
+        next.image.url = url;
+        return next;
+      });
     });
   }
 
   return (
     <div className="App">
       <Header></Header>
-      <Image
-        url={myImage.url}
-        handleClick={onImageClick}
-        scale={state.scale}
-        dogs={state.dogs}
-        dogsFound={state.dogsFound}
-      ></Image>
-      <Popup popup={state.popup} onClick={onPopupClick}></Popup>
+      <Image state={state.image} onClick={handleImageClick}></Image>
+      <Popup state={state.popup} onClick={handlePopupClick}></Popup>
+      <Menu state={state.menu} onClick={handleMenuClick}></Menu>
     </div>
   );
 }

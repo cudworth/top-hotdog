@@ -3,18 +3,19 @@ import hotdogImage from '../assets/hotdog.png';
 import notHotdogImage from '../assets/nothotdog.png';
 
 function Popup(props) {
+  const { isVisible, hotdog } = props.state;
   return (
     <div
       className={[
-        props.popup.visible ? 'Popup' : 'Popup-hidden',
-        props.popup.hotdog ? 'Popup-hotdog' : 'Popup-not-hotdog',
+        isVisible ? 'Popup' : 'Popup-hidden',
+        hotdog ? 'Popup-hotdog' : 'Popup-not-hotdog',
       ].join(' ')}
       onClick={(e) => props.onClick(e)}
     >
-      <div>{props.popup.hotdog ? 'Hotdog!' : 'Not hotdog!'}</div>
+      <div>{hotdog ? 'Hotdog!' : 'Not hotdog!'}</div>
       <img
         alt="Hotdog or not hotdog icon"
-        src={props.popup.hotdog ? hotdogImage : notHotdogImage}
+        src={hotdog ? hotdogImage : notHotdogImage}
       ></img>
     </div>
   );
