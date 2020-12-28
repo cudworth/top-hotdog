@@ -4,24 +4,11 @@ import Header from './Header/Header';
 import Image from './Image/Image';
 import Popup from './Popup/Popup';
 import Menu from './Menu/Menu';
+import Scores from './Scores/Scores';
+import EntryForm from './EntryForm/EntryForm';
 import firebaseModule from './firebaseModule';
 
-//import localImage from './assets/food-2379472_1920.jpg';
-
 import { useEffect, useState } from 'react';
-
-//Data format y-coord, x-coord, radius normalized for image height
-/*
-const myImage = {
-  url: localImage,
-  dogs: [
-    { y: 0.32355555555555554, x: 1.0844444444444445, r: 0.12 },
-    { y: 0.128, x: 1.408, r: 0.12 },
-    { y: 0.48355555555555557, x: 1.5715555555555556, r: 0.12 },
-    { y: 0.8924444444444445, x: 1.4151111111111112, r: 0.12 },
-  ],
-};
-*/
 
 const myFirebase = firebaseModule();
 
@@ -33,9 +20,15 @@ function App() {
       isVisible: false,
       url: null,
       scale: null,
-      dogsFound: [],
+      dogsFound: [false],
       data: {},
     },
+    entryForm: { isVisible: false },
+    scores: { isVisible: false },
+  });
+
+  useEffect(() => {
+    console.log('All dogs found?: ', allHotdogsFound());
   });
 
   useEffect(() => {
@@ -66,6 +59,10 @@ function App() {
     return arr;
   }
 
+  function allHotdogsFound() {
+    return state.image.dogsFound.includes(false) ? false : true;
+  }
+
   function handleImageClick(e) {
     //get click coordinates relative to page
     const rect = e.target.getBoundingClientRect();
@@ -74,14 +71,15 @@ function App() {
     const normY = (e.pageY - rect.top - window.scrollY) / rect.height;
     const normX = (e.pageX - rect.left - window.scrollX) / rect.height;
     const coords = [normY, normX];
-    console.log(coords);
+    //console.log(coords);
 
     setState((prev) => {
       const next = { ...prev };
       next.image.scale = rect.height;
       const hits = isHotDog(coords, state.image.data.dogs);
       hits.forEach((hit, i) => {
-        if (hit && !next.image.dogsFound[i]) {
+        if (hit) {
+          //&& !next.image.dogsFound[i]
           next.image.dogsFound[i] = true;
         }
       });
@@ -112,6 +110,10 @@ function App() {
         next.image.isVisible = true;
         next.image.data = next.menu.images[key];
         next.image.url = url;
+        next.image.dogsFound = Array(next.menu.images[key].dogs.length).fill(
+          false
+        );
+
         return next;
       });
     });
@@ -123,6 +125,8 @@ function App() {
       <Image state={state.image} onClick={handleImageClick}></Image>
       <Popup state={state.popup} onClick={handlePopupClick}></Popup>
       <Menu state={state.menu} onClick={handleMenuClick}></Menu>
+      <EntryForm state={state.entryForm}></EntryForm>
+      <Scores state={state.scores}></Scores>
     </div>
   );
 }
