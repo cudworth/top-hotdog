@@ -1,10 +1,10 @@
 import './EntryForm.css';
 
 function EntryForm(props) {
-  const { isVisible } = props.state;
+  const { isVisible, completionTime } = props.state;
   return (
     <div className={isVisible ? 'EntryForm' : 'EntryForm-hidden'}>
-      EntryForm
+      Completion time: {completionTime}
     </div>
   );
 }

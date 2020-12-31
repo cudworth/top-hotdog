@@ -12,24 +12,24 @@ import { useEffect, useState } from 'react';
 
 const myFirebase = firebaseModule();
 
-function App() {
-  const [state, setState] = useState({
-    popup: { isVisible: false, hotdog: false },
-    menu: { isVisible: true, images: {} },
-    image: {
-      isVisible: false,
-      url: null,
-      scale: null,
-      dogsFound: [false],
-      data: {},
-    },
-    entryForm: { isVisible: false },
-    scores: { isVisible: false },
-  });
+const defaultState = {
+  popup: { isVisible: false, hotdog: false },
+  menu: { isVisible: true, images: {} },
+  image: {
+    isVisible: false,
+    url: null,
+    scale: null,
+    dogsFound: [false],
+    data: {},
+    startTime: null,
+    finishTime: null,
+  },
+  entryForm: { isVisible: false, completionTime: null },
+  scores: { isVisible: false },
+};
 
-  useEffect(() => {
-    console.log('All dogs found?: ', allHotdogsFound());
-  });
+function App() {
+  const [state, setState] = useState(defaultState);
 
   useEffect(() => {
     myFirebase.read('images').then((images) => {
@@ -59,10 +59,6 @@ function App() {
     return arr;
   }
 
-  function allHotdogsFound() {
-    return state.image.dogsFound.includes(false) ? false : true;
-  }
-
   function handleImageClick(e) {
     //get click coordinates relative to page
     const rect = e.target.getBoundingClientRect();
@@ -79,13 +75,21 @@ function App() {
       const hits = isHotDog(coords, state.image.data.dogs);
       hits.forEach((hit, i) => {
         if (hit) {
-          //&& !next.image.dogsFound[i]
           next.image.dogsFound[i] = true;
         }
       });
 
-      next.popup.isVisible = true;
-      next.popup.hotdog = hits.includes(true) ? true : false;
+      //Check if all hotdogs are found in the image
+      if (!state.image.dogsFound.includes(false)) {
+        next.image.finishTime = Date.now();
+        next.image.isVisible = false;
+        next.entryForm.isVisible = true;
+        next.entryForm.completionTime =
+          Math.floor((next.image.finishTime - next.image.startTime) / 100) / 10;
+      } else {
+        next.popup.isVisible = true;
+        next.popup.hotdog = hits.includes(true) ? true : false;
+      }
 
       return next;
     });
@@ -101,6 +105,7 @@ function App() {
 
   function handleMenuClick(args) {
     const { e, key } = args;
+    const startTime = Date.now();
     e.preventDefault();
 
     myFirebase.getDownloadURL(state.menu.images[key].gs).then((url) => {
@@ -113,6 +118,7 @@ function App() {
         next.image.dogsFound = Array(next.menu.images[key].dogs.length).fill(
           false
         );
+        next.image.startTime = startTime;
 
         return next;
       });
