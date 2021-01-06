@@ -17,6 +17,7 @@ const defaultState = {
   menu: { isVisible: true, images: {} },
   image: {
     isVisible: false,
+    key: null,
     url: null,
     scale: null,
     dogsFound: [false],
@@ -24,7 +25,7 @@ const defaultState = {
     startTime: null,
     finishTime: null,
   },
-  entryForm: { isVisible: false, completionTime: null },
+  entryForm: { isVisible: true, completionTime: null },
   scores: { isVisible: false },
 };
 
@@ -33,6 +34,7 @@ function App() {
 
   useEffect(() => {
     myFirebase.read('images').then((images) => {
+      console.log(images);
       const asyncTasks = Object.keys(images).map((key) => {
         return myFirebase.getDownloadURL(images[key].gs).then((url) => {
           images[key].url = url;
@@ -113,6 +115,7 @@ function App() {
         const next = { ...prev };
         next.menu.isVisible = false;
         next.image.isVisible = true;
+        next.image.key = key;
         next.image.data = next.menu.images[key];
         next.image.url = url;
         next.image.dogsFound = Array(next.menu.images[key].dogs.length).fill(
@@ -125,13 +128,30 @@ function App() {
     });
   }
 
+  function handleFormSubmit(args) {
+    const { e, userName } = args;
+    e.preventDefault();
+    myFirebase
+      .create('high-scores', {
+        imageID: state.image.key,
+        time: state.entryForm.completionTime,
+        user: userName ? userName : 'Anon',
+      })
+      .then(() => {
+        setState((prev) => {
+          const next = { ...prev };
+          return next;
+        });
+      });
+  }
+
   return (
     <div className="App">
       <Header></Header>
       <Image state={state.image} onClick={handleImageClick}></Image>
       <Popup state={state.popup} onClick={handlePopupClick}></Popup>
       <Menu state={state.menu} onClick={handleMenuClick}></Menu>
-      <EntryForm state={state.entryForm}></EntryForm>
+      <EntryForm state={state.entryForm} onClick={handleFormSubmit}></EntryForm>
       <Scores state={state.scores}></Scores>
     </div>
   );
