@@ -25,8 +25,8 @@ const defaultState = {
     startTime: null,
     finishTime: null,
   },
-  entryForm: { isVisible: true, completionTime: null },
-  scores: { isVisible: false },
+  entryForm: { isVisible: false, completionTime: null },
+  scores: { isVisible: false, data: [] },
 };
 
 function App() {
@@ -34,7 +34,6 @@ function App() {
 
   useEffect(() => {
     myFirebase.read('images').then((images) => {
-      console.log(images);
       const asyncTasks = Object.keys(images).map((key) => {
         return myFirebase.getDownloadURL(images[key].gs).then((url) => {
           images[key].url = url;
@@ -138,12 +137,35 @@ function App() {
         user: userName ? userName : 'Anon',
       })
       .then(() => {
+        return getHighScores(state.image.key);
+      })
+      .then((highScores) => {
         setState((prev) => {
           const next = { ...prev };
+          next.entryForm.isVisible = false;
+          next.scores.isVisible = true;
+          next.scores.data = highScores;
           return next;
         });
       });
   }
+
+  function getHighScores(imageID) {
+    return myFirebase.read('high-scores').then((data) => {
+      const arr = [];
+      Object.keys(data).forEach((key) => {
+        if ((data[key].imageID = imageID)) {
+          arr.push(data[key]);
+        }
+      });
+      arr.sort((a, b) => {
+        return a.time - b.time;
+      });
+      return arr.slice(0, 10);
+    });
+  }
+
+  //getHighScores('Bip1daTuy77gBQU7hPFR').then((data) => console.log(data));
 
   return (
     <div className="App">
