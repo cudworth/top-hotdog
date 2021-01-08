@@ -124,7 +124,6 @@ function App() {
         next.menu.isVisible = false;
         next.image.isVisible = true;
         next.image.key = key;
-        //next.image.data = serverData.images[key];
         next.image.url = url;
         next.image.dogsFound = Array(serverData.images[key].dogs.length).fill(
           false
@@ -161,7 +160,7 @@ function App() {
     return myFirebase.read('high-scores').then((data) => {
       const arr = [];
       Object.keys(data).forEach((key) => {
-        if ((data[key].imageID = imageID)) {
+        if (data[key].imageID === imageID) {
           arr.push(data[key]);
         }
       });
