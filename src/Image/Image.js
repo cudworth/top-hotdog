@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import './Image.css';
 
 function Image(props) {
-  const { isVisible, url, scale, dogsFound, data } = props.state;
+  const { isVisible, url, scale, key, dogsFound } = props.state;
+  const images = props.images;
 
   useEffect(() => {
     drawCircles();
@@ -16,7 +17,7 @@ function Image(props) {
     const ctx = c.getContext('2d');
     dogsFound.forEach((dogFound, i) => {
       if (dogFound) {
-        const { y, x, r } = data.dogs[i];
+        const { y, x, r } = images[key].dogs[i];
         ctx.beginPath();
         ctx.arc(x * scale, y * scale, r * scale, 0, 2 * Math.PI);
         ctx.lineWidth = 6;
@@ -32,6 +33,7 @@ function Image(props) {
         <img src={url} alt="[Various foods]"></img>
         <canvas
           onClick={(e) => {
+            e.preventDefault();
             props.onClick(e);
           }}
         ></canvas>

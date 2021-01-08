@@ -7,6 +7,7 @@ import Menu from './Menu/Menu';
 import Scores from './Scores/Scores';
 import EntryForm from './EntryForm/EntryForm';
 import firebaseModule from './firebaseModule';
+import { cloneDeep } from 'lodash';
 
 import { useEffect, useState } from 'react';
 
@@ -14,7 +15,7 @@ const myFirebase = firebaseModule();
 
 const defaultState = {
   popup: { isVisible: false, hotdog: false },
-  menu: { isVisible: true, images: {} },
+  menu: { isVisible: true },
   image: {
     isVisible: false,
     key: null,
@@ -26,13 +27,19 @@ const defaultState = {
     finishTime: null,
   },
   entryForm: { isVisible: false, completionTime: null },
-  scores: { isVisible: false, data: [] },
+  scores: { isVisible: false },
 };
 
+const serverData = { images: {}, scores: [] };
+
 function App() {
-  const [state, setState] = useState(defaultState);
+  const [state, setState] = useState(cloneDeep(defaultState));
 
   useEffect(() => {
+    getServerData();
+  }, []);
+
+  function getServerData() {
     myFirebase.read('images').then((images) => {
       const asyncTasks = Object.keys(images).map((key) => {
         return myFirebase.getDownloadURL(images[key].gs).then((url) => {
@@ -41,14 +48,17 @@ function App() {
       });
 
       Promise.all(asyncTasks).then(() => {
+        serverData.images = images;
         setState((prev) => {
-          const next = { ...prev };
-          next.menu.images = images;
-          return next;
+          return { ...prev };
         });
       });
     });
-  }, []);
+  }
+
+  function resetApp() {
+    setState(cloneDeep(defaultState));
+  }
 
   function isHotDog(coords, hotdogs) {
     const [y1, x1] = coords;
@@ -73,7 +83,7 @@ function App() {
     setState((prev) => {
       const next = { ...prev };
       next.image.scale = rect.height;
-      const hits = isHotDog(coords, state.image.data.dogs);
+      const hits = isHotDog(coords, serverData.images[state.image.key].dogs);
       hits.forEach((hit, i) => {
         if (hit) {
           next.image.dogsFound[i] = true;
@@ -105,19 +115,18 @@ function App() {
   }
 
   function handleMenuClick(args) {
-    const { e, key } = args;
+    const { key } = args;
     const startTime = Date.now();
-    e.preventDefault();
 
-    myFirebase.getDownloadURL(state.menu.images[key].gs).then((url) => {
+    myFirebase.getDownloadURL(serverData.images[key].gs).then((url) => {
       setState((prev) => {
         const next = { ...prev };
         next.menu.isVisible = false;
         next.image.isVisible = true;
         next.image.key = key;
-        next.image.data = next.menu.images[key];
+        //next.image.data = serverData.images[key];
         next.image.url = url;
-        next.image.dogsFound = Array(next.menu.images[key].dogs.length).fill(
+        next.image.dogsFound = Array(serverData.images[key].dogs.length).fill(
           false
         );
         next.image.startTime = startTime;
@@ -128,8 +137,7 @@ function App() {
   }
 
   function handleFormSubmit(args) {
-    const { e, userName } = args;
-    e.preventDefault();
+    const { userName } = args;
     myFirebase
       .create('high-scores', {
         imageID: state.image.key,
@@ -139,12 +147,11 @@ function App() {
       .then(() => {
         return getHighScores(state.image.key);
       })
-      .then((highScores) => {
+      .then(() => {
         setState((prev) => {
           const next = { ...prev };
           next.entryForm.isVisible = false;
           next.scores.isVisible = true;
-          next.scores.data = highScores;
           return next;
         });
       });
@@ -161,20 +168,30 @@ function App() {
       arr.sort((a, b) => {
         return a.time - b.time;
       });
-      return arr.slice(0, 10);
+      serverData.scores = arr.slice(0, 10);
     });
   }
-
-  //getHighScores('Bip1daTuy77gBQU7hPFR').then((data) => console.log(data));
 
   return (
     <div className="App">
       <Header></Header>
-      <Image state={state.image} onClick={handleImageClick}></Image>
+      <Image
+        state={state.image}
+        images={serverData.images}
+        onClick={handleImageClick}
+      ></Image>
       <Popup state={state.popup} onClick={handlePopupClick}></Popup>
-      <Menu state={state.menu} onClick={handleMenuClick}></Menu>
+      <Menu
+        state={state.menu}
+        images={serverData.images}
+        onClick={handleMenuClick}
+      ></Menu>
       <EntryForm state={state.entryForm} onClick={handleFormSubmit}></EntryForm>
-      <Scores state={state.scores}></Scores>
+      <Scores
+        state={state.scores}
+        scores={serverData.scores}
+        onClick={resetApp}
+      ></Scores>
     </div>
   );
 }

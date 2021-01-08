@@ -1,7 +1,18 @@
 .Scores {
   color: indigo;
+  position: absolute;
+  z-index: 1;
+  top: 10%;
+  bottom: 10%;
+  left: 10%;
+  right: 10%;
 }
 
 .Scores-hidden {
   display: none;
+}
+
+.Scores-column-container {
+  display: flex;
+  justify-content: center;
 }

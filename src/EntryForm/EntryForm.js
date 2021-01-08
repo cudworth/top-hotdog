@@ -27,7 +27,10 @@ function EntryForm(props) {
         <input
           type="button"
           value="Submit"
-          onClick={(e) => props.onClick({ e, userName })}
+          onClick={(e) => {
+            e.preventDefault();
+            props.onClick({ userName });
+          }}
         ></input>
       </form>
     </div>

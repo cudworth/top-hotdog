@@ -1,22 +1,34 @@
-import { map } from 'lodash';
 import './Scores.css';
 
 function Scores(props) {
-  const { isVisible, data } = props.state;
-  console.log(data);
+  const { isVisible } = props.state;
+  const scores = props.scores;
   return (
     <div className={isVisible ? 'Scores' : 'Scores-hidden'}>
-      <div>Top Scores:</div>
-      <div>Player</div>
-      <div>Time</div>
-      {data.map((score, index) => {
-        return (
-          <div key={'high_score_' + index}>
-            <div>{score.user}</div>
-            <div>{score.time}</div>
-          </div>
-        );
-      })}
+      <h2>Top Scores</h2>
+      <div className="Scores-column-container">
+        <div>
+          <h3>Player</h3>
+          {scores.map((score, index) => {
+            return <p key={'high_score_' + index}>{score.user}</p>;
+          })}
+        </div>
+
+        <div>
+          <h3>Completion Time</h3>
+          {scores.map((score, index) => {
+            return <p key={'high_score_' + index}>{score.time}</p>;
+          })}
+        </div>
+      </div>
+      <input
+        type="button"
+        value="Return to Menu"
+        onClick={(e) => {
+          e.preventDefault();
+          props.onClick();
+        }}
+      ></input>
     </div>
   );
 }

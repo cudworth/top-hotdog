@@ -1,7 +1,8 @@
 import './Menu.css';
 
 function Menu(props) {
-  const { isVisible, images } = props.state;
+  const { isVisible } = props.state;
+  const images = props.images;
 
   return (
     <div className={isVisible ? 'Menu' : 'Menu-hidden'}>
@@ -12,7 +13,8 @@ function Menu(props) {
             type="button"
             value={images[key].title}
             onClick={(e) => {
-              props.onClick({ e, key });
+              e.preventDefault();
+              props.onClick({ key });
             }}
           ></input>
         );
