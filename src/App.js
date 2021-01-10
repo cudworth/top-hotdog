@@ -5,6 +5,7 @@ import Image from './Image/Image';
 import Popup from './Popup/Popup';
 import Menu from './Menu/Menu';
 import Scores from './Scores/Scores';
+import Github from './Github/Github';
 import EntryForm from './EntryForm/EntryForm';
 import firebaseModule from './firebaseModule';
 import { cloneDeep } from 'lodash';
@@ -174,6 +175,7 @@ function App() {
   return (
     <div className="App">
       <Header></Header>
+      <Github></Github>
       <Image
         state={state.image}
         images={serverData.images}

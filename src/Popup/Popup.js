@@ -1,6 +1,6 @@
 import './Popup.css';
-import hotdogImage from '../assets/hotdog.png';
-import notHotdogImage from '../assets/nothotdog.png';
+import hotdogImage from './hotdog.png';
+import notHotdogImage from './nothotdog.png';
 
 function Popup(props) {
   const { isVisible, hotdog } = props.state;
