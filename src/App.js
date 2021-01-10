@@ -1,6 +1,5 @@
 import './App.css';
 import Header from './Header/Header';
-//import Footer from './Footer/Footer';
 import Image from './Image/Image';
 import Popup from './Popup/Popup';
 import Menu from './Menu/Menu';
@@ -174,8 +173,8 @@ function App() {
 
   return (
     <div className="App">
-      <Header></Header>
       <Github></Github>
+      <Header></Header>
       <Image
         state={state.image}
         images={serverData.images}

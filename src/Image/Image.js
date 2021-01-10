@@ -10,8 +10,8 @@ function Image(props) {
   });
 
   function drawCircles() {
-    const c = document.querySelector('canvas');
-    const img = document.querySelector('img');
+    const c = document.getElementById('Image-canvas');
+    const img = document.getElementById('Image-img');
     c.width = img.width;
     c.height = img.height;
     const ctx = c.getContext('2d');
@@ -30,8 +30,9 @@ function Image(props) {
   return (
     <div className={isVisible ? 'Image' : 'Image-hidden'}>
       <div>
-        <img src={url} alt="[Various foods]"></img>
+        <img id="Image-img" src={url} alt="[Various foods]"></img>
         <canvas
+          id="Image-canvas"
           onClick={(e) => {
             e.preventDefault();
             props.onClick(e);

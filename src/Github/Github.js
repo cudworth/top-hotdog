@@ -1,7 +1,7 @@
 import './Github.css';
 import githubIcon from './GitHub-Mark-32px.png';
 
-function Github(props) {
+function Github() {
   return (
     <a href="https://github.com/cudworth" className="Github">
       <span>
