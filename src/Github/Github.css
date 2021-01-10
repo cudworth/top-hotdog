@@ -3,21 +3,21 @@
   bottom: 4px;
   left: 4px;
   height: 36px;
-  width: 92px;
+  width: 108px;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
 
-  border: 2px solid lightgray;
+  border: 1px solid lightgray;
   border-radius: 18px;
   font-family: sans-serif;
   font-size: 14px;
-  color: lightgray;
+  color: black;
   text-decoration: none;
 }
 
 .Github:hover {
-  color: black;
+  color: cornflowerblue;
   border-color: cornflowerblue;
 }
 

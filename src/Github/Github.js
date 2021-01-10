@@ -7,7 +7,7 @@ function Github(props) {
       <span>
         <img alt="Github Icon" src={githubIcon}></img>
       </span>
-      <span>Github</span>
+      <span>cudworth</span>
     </a>
   );
 }
