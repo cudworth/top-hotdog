@@ -29,7 +29,7 @@ function Image(props) {
 
   return (
     <div className={isVisible ? 'Image' : 'Image-hidden'}>
-      <div>
+      <div className="Image-container">
         <img id="Image-img" src={url} alt="[Various foods]"></img>
         <canvas
           id="Image-canvas"

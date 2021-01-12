@@ -15,9 +15,9 @@ function Scores(props) {
         </div>
 
         <div>
-          <h3>Completion Time</h3>
+          <h3>Time</h3>
           {scores.map((score, index) => {
-            return <p key={'high_score_' + index}>{score.time}</p>;
+            return <p key={'high_score_' + index}>{score.time}s</p>;
           })}
         </div>
       </div>

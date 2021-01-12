@@ -6,19 +6,24 @@ function Menu(props) {
 
   return (
     <div className={isVisible ? 'Menu' : 'Menu-hidden'}>
-      {Object.keys(images).map((key) => {
-        return (
-          <input
-            key={key}
-            type="button"
-            value={images[key].title}
-            onClick={(e) => {
-              e.preventDefault();
-              props.onClick({ key });
-            }}
-          ></input>
-        );
-      })}
+      <div>
+        <h2>Select an image to play!</h2>
+      </div>
+      <div>
+        {Object.keys(images).map((key) => {
+          return (
+            <input
+              key={key}
+              type="button"
+              value={images[key].title}
+              onClick={(e) => {
+                e.preventDefault();
+                props.onClick({ key });
+              }}
+            ></input>
+          );
+        })}
+      </div>
     </div>
   );
 }

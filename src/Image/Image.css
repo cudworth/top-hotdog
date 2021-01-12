@@ -1,11 +1,22 @@
-.Image div {
-  display: inline-block;
+.Image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.Image-container {
+  display: block;
   position: relative;
   line-height: 0;
 }
 
 .Image img {
-  height: 30vh;
+  height: 50vh;
 }
 
 .Image canvas {
