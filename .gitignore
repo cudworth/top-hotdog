@@ -3,6 +3,7 @@
 #CUSTOM
 firebaseKeys.json
 /assets
+.firebase
 
 # dependencies
 /node_modules
